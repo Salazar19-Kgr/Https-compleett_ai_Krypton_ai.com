@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Cuenta</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="glow" id="glow"></div>
+
+    <section id="view-login" class="screen active">
+      <div class="card">
+        <span class="badge">✦ Bienvenido de nuevo</span>
+        <h1>Iniciar sesión</h1>
+        <p class="sub">Ingresá a tu cuenta para continuar</p>
+        <form id="form-login" class="form">
+          <input type="email" placeholder="Correo electrónico" required />
+          <input type="password" placeholder="Contraseña" required />
+          <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+        <div class="divider"><span>o continuá con</span></div>
+        <button class="btn-google" data-google>
+          <span class="g-icon">G</span> Continuar con Google
+        </button>
+        <p class="switch">¿No tenés cuenta? <a href="#" id="go-register">Registrate</a></p>
+      </div>
+    </section>
+
+    <section id="view-register" class="screen">
+      <div class="card">
+        <span class="badge">✦ Creá tu cuenta</span>
+        <h1>Registrarse</h1>
+        <p class="sub">Es rápido y gratis</p>
+        <form id="form-register" class="form">
+          <input id="reg-name" type="text" placeholder="Nombre completo" required />
+          <input type="email" placeholder="Correo electrónico" required />
+          <input type="password" placeholder="Contraseña" required />
+          <button type="submit" class="btn-primary">Crear cuenta</button>
+        </form>
+        <div class="divider"><span>o continuá con</span></div>
+        <button class="btn-google" data-google>
+          <span class="g-icon">G</span> Continuar con Google
+        </button>
+        <p class="switch">¿Ya tenés cuenta? <a href="#" id="go-login">Iniciá sesión</a></p>
+      </div>
+    </section>
+
+    <section id="view-dashboard" class="screen">
+      <div class="card">
+        <div class="avatar" id="avatar">P</div>
+        <h1>¡Hola, <span id="user-name" class="highlight">amigo</span>!</h1>
+        <p class="sub">Tu cuenta fue creada con éxito 🎉</p>
+        <button id="go-assistant" class="btn-primary">Abrir asistente 🤖</button>
+        <button id="logout" class="btn-secondary">Cerrar sesión</button>
+      </div>
+    </section>
+
+    <section id="view-assistant" class="screen">
+      <div class="card card-chat">
+        <div class="chat-header">
+          <button id="back-dashboard" class="btn-back">←</button>
+          <span class="badge">✦ Asistente</span>
+        </div>
+        <div id="chat-log" class="chat-log"></div>
+        <form id="form-chat" class="chat-form">
+          <input id="chat-input" type="text" placeholder="Escribí un mensaje..." autocomplete="off" />
+          <button type="submit" class="btn-send">➤</button>
+        </form>
+      </div>
+    </section>
+
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
