@@ -1,3 +1,5 @@
+const GEMINI_API_KEY = "AIzaSyBMbttyxddHx21CpYpdh-l51ceITcqmDAc";
+
 const glow = document.getElementById('glow');
 window.addEventListener('pointermove', (e) => {
   glow.style.left = e.clientX + 'px';
@@ -22,44 +24,27 @@ function enterDashboard(name) {
   showView('dashboard');
 }
 
-document.getElementById('go-register').addEventListener('click', (e) => {
-  e.preventDefault();
-  showView('register');
-});
-document.getElementById('go-login').addEventListener('click', (e) => {
-  e.preventDefault();
-  showView('login');
-});
-
+document.getElementById('go-register').addEventListener('click', (e) => { e.preventDefault(); showView('register'); });
+document.getElementById('go-login').addEventListener('click', (e) => { e.preventDefault(); showView('login'); });
 document.getElementById('form-login').addEventListener('submit', (e) => {
   e.preventDefault();
   const email = e.target.querySelector('input[type="email"]').value;
   enterDashboard(email.split('@')[0] || 'amigo');
 });
-
 document.getElementById('form-register').addEventListener('submit', (e) => {
   e.preventDefault();
   const name = document.getElementById('reg-name').value;
   enterDashboard(name || 'amigo');
 });
-
 document.querySelectorAll('[data-google]').forEach(btn => {
   btn.addEventListener('click', () => {
     const nombre = prompt('Ingresá el nombre de tu cuenta de Google:');
     enterDashboard(nombre && nombre.trim() ? nombre.trim() : 'amigo');
   });
 });
-
-document.getElementById('logout').addEventListener('click', () => {
-  showView('login');
-});
-
-document.getElementById('go-assistant').addEventListener('click', () => {
-  showView('assistant');
-});
-document.getElementById('back-dashboard').addEventListener('click', () => {
-  showView('dashboard');
-});
+document.getElementById('logout').addEventListener('click', () => showView('login'));
+document.getElementById('go-assistant').addEventListener('click', () => showView('assistant'));
+document.getElementById('back-dashboard').addEventListener('click', () => showView('dashboard'));
 
 const chatLog = document.getElementById('chat-log');
 const chatForm = document.getElementById('form-chat');
@@ -74,41 +59,23 @@ function addMessage(text, from) {
   return div;
 }
 
-const respuestas = [
-  { palabras: ['hola', 'buenas', 'ola'], respuesta: '¡Hola! ¿En qué te puedo ayudar hoy?' },
-  { palabras: ['nombre', 'quien sos', 'quién sos'], respuesta: 'Soy un asistente de demostración, creado con HTML, CSS y JS.' },
-  { palabras: ['gracias'], respuesta: '¡De nada! Para eso estoy 😊' },
-  { palabras: ['chau', 'adios', 'adiós', 'nos vemos'], respuesta: '¡Chau! Que tengas un buen día.' },
-];
-
-function respuestaFija(mensaje) {
-  const texto = mensaje.toLowerCase();
-  for (const item of respuestas) {
-    if (item.palabras.some(p => texto.includes(p))) {
-      return item.respuesta;
-    }
-  }
-  return null;
-}
-
-async function buscarEnWikipedia(consulta) {
+async function preguntarGemini(mensaje) {
   try {
-    const busqueda = await fetch(
-      `https://es.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(consulta)}&format=json&origin=*`
+    const respuesta = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: mensaje }] }]
+        })
+      }
     ).then(r => r.json());
 
-    const primerResultado = busqueda.query.search[0];
-    if (!primerResultado) {
-      return 'No encontré información sobre eso. Probá preguntar de otra forma.';
-    }
-
-    const resumen = await fetch(
-      `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(primerResultado.title)}`
-    ).then(r => r.json());
-
-    return resumen.extract || 'Encontré el tema, pero no pude traer un resumen claro.';
+    return respuesta.candidates?.[0]?.content?.parts?.[0]?.text
+      || "No pude generar una respuesta. Probá de nuevo.";
   } catch (err) {
-    return 'Hubo un problema buscando esa información. Revisá tu conexión e intentá de nuevo.';
+    return "Hubo un problema conectando con la IA. Revisá tu conexión.";
   }
 }
 
@@ -118,16 +85,9 @@ chatForm.addEventListener('submit', async (e) => {
   if (!texto) return;
   addMessage(texto, 'user');
   chatInput.value = '';
-
-  const fija = respuestaFija(texto);
-  if (fija) {
-    setTimeout(() => addMessage(fija, 'bot'), 400);
-    return;
-  }
-
-  const pensando = addMessage('Buscando información...', 'bot');
-  const respuesta = await buscarEnWikipedia(texto);
+  const pensando = addMessage('Pensando...', 'bot');
+  const respuesta = await preguntarGemini(texto);
   pensando.textContent = respuesta;
 });
 
-addMessage('¡Hola! Soy tu asistente. Preguntame lo que quieras y busco la info por vos 🔎', 'bot');
+addMessage('¡Hola! Soy tu asistente con IA real. Preguntame lo que quieras 🤖', 'bot');
