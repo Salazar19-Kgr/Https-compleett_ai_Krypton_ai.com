@@ -1,4 +1,3 @@
-const GROQ_API_KEY = "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";
 import './style.css'
 import heroImg from './assets/hero.png'
 import javascriptLogo from './assets/javascript.svg'
@@ -63,15 +62,12 @@ setupCounter(document.querySelector('#counter'))
 async function preguntarGemini(mensaje) {
   try {
     const respuesta = await fetch(
-      "https://api.groq.com/openai/v1/chat/completions",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${GROQ_API_KEY}`
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: mensaje }]
         })
       }
